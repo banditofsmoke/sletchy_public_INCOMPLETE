@@ -1,0 +1,34 @@
+# Enable with:  uv run pre-commit install
+# The secret scan is the one that matters most - see the header of
+# scripts/secret_scan.py.
+
+repos:
+  - repo: local
+    hooks:
+      - id: secret-scan
+        name: secret scan (no API keys in the repo)
+        entry: python scripts/secret_scan.py --staged
+        language: system
+        pass_filenames: false
+        always_run: true
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: f0b5944bef86f50d875305821a0ab0d8c601e465  # v0.8.4, pinned to a commit (#34)
+    hooks:
+      - id: ruff
+        args: [--fix]
+      - id: ruff-format
+
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: cef0300fd0fc4d2a87a85fa2093c6b283ea36f4b  # v5.0.0, pinned to a commit (#34)
+    hooks:
+      - id: check-added-large-files
+        args: [--maxkb=1024]
+      - id: check-merge-conflict
+      - id: check-toml
+      - id: check-yaml
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+      - id: detect-private-key
+      - id: no-commit-to-branch
+        args: [--branch, main]

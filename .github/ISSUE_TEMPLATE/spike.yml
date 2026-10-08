@@ -1,0 +1,77 @@
+name: "Spike"
+description: "A timeboxed measurement that answers one question before anything is built on the answer."
+title: "<plane>/<module>: <the question>?"
+labels: ["spike"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        A spike measures; it builds no product code. Each phase reports before the next
+        begins, and the answer is an ADR with numbers. Written for a public reader
+        (`docs/LAW/writing-conventions.md`, section 0).
+
+  - type: textarea
+    id: question
+    attributes:
+      label: The question
+      description: One question, and the design decision that rests on its answer.
+      placeholder: "Does a firewall rule scoped to an AppContainer SID bind to a process launched into it? The egress design assumes it does."
+    validations: { required: true }
+
+  - type: textarea
+    id: outcomes
+    attributes:
+      label: What each answer changes
+      description: What proceeds if the answer is yes, and what is redesigned if it is no.
+    validations: { required: true }
+
+  - type: textarea
+    id: method
+    attributes:
+      label: Method, safest phase first
+      description: >
+        Each phase with its controls: a positive control that must succeed, so a probe
+        that never ran is not read as a denial (L001), and a negative control that must
+        fail.
+    validations: { required: true }
+
+  - type: textarea
+    id: host_impact
+    attributes:
+      label: Host impact
+      description: >
+        What it touches on the operator's machine, whether it needs an administrator,
+        whether anything leaves the machine, and how each change is undone. Nothing
+        elevated or off the machine runs until the operator approves it on this issue
+        (LAW 0).
+    validations: { required: true }
+
+  - type: textarea
+    id: abuse_cases
+    attributes:
+      label: Abuse cases
+      description: >
+        How the spike itself could do harm or mislead: left-behind changes, traffic the
+        operator did not approve, a wrong conclusion. What stops each.
+      placeholder: |
+        | Who | What they try | What stops it | Proven by |
+        |---|---|---|---|
+        |  |  |  |  |
+    validations: { required: true }
+
+  - type: textarea
+    id: definition_of_done
+    attributes:
+      label: Definition of done
+      value: |
+        - An ADR recording what each phase measured, with numbers, on a named OS build
+        - The host the same before and after, shown by reading it
+        - Every gap the spike could not close written down
+    validations: { required: true }
+
+  - type: textarea
+    id: known_gaps
+    attributes:
+      label: What this cannot answer
+      description: Stated before the run, so a result is not stretched to cover it.
+    validations: { required: false }

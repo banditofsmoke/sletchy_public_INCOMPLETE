@@ -1,0 +1,99 @@
+name: "Build task"
+description: "Build or change something: what it delivers, how it is proven, and what it leaves alone."
+title: "<plane>/<module>: <what it delivers>"
+labels: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        A bug is a **Bug**; a question to answer by measuring is a **Spike**.
+        Add the wave label by hand, or `later` for an idea recorded but not scheduled.
+        Written for a public reader: no machine names, paths, personal circumstances or
+        secrets (`docs/LAW/writing-conventions.md`, section 0).
+
+  - type: textarea
+    id: goal
+    attributes:
+      label: Goal
+      description: >
+        The outcome, not the activity. Then what stays broken or impossible until it
+        lands, and which issues it blocks.
+      placeholder: "Make editing any past ledger entry detectable. Until then, #N cannot trust the record."
+    validations: { required: true }
+
+  - type: textarea
+    id: behaviour_contract
+    attributes:
+      label: Behaviour contract
+      description: >
+        What the tests will assert, written as assertions. Include the deny path: what
+        happens when policy says no, input is malformed, or a dependency is missing.
+      placeholder: |
+        - Mutating any entry fails verification
+        - Startup halts on a corrupt chain
+        - A missing signing key raises; it never falls back
+    validations: { required: true }
+
+  - type: textarea
+    id: abuse_cases
+    attributes:
+      label: Abuse cases
+      description: >
+        Who would misuse what this builds, and how: exploit it, harm the host or someone
+        else with it, or infect it through a dependency, a build step or a workflow. For
+        each, what will stop it and the test that will prove it. Then what nothing stops.
+      placeholder: |
+        | Who | What they try | What stops it | Proven by |
+        |---|---|---|---|
+        | A script at the terminal | Loops the command to fill the disk | A ceiling checked before writing | test_a_flood_stops_at_the_ceiling |
+    validations: { required: true }
+
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope
+      description: >
+        In, out for now (with the issue that tracks it), and out permanently. Permanent
+        exclusions are written here so nobody adds them later to be helpful.
+      placeholder: |
+        IN: hash chain, signing, verify on start.
+        OUT for now: compaction, #N.
+        OUT permanently: any ledger repair function.
+    validations: { required: true }
+
+  - type: textarea
+    id: laws
+    attributes:
+      label: Laws in play
+      description: >
+        Which laws in docs/LAW/laws.md this must satisfy, and how code enforces each.
+        "LAW 8" is not an answer; "a DANGEROUS flag defaulting on raises at
+        construction" is.
+    validations: { required: true }
+
+  - type: textarea
+    id: definition_of_done
+    attributes:
+      label: Definition of done
+      description: >
+        The tests that must pass, the adversarial test included, and the COVERAGE.md
+        row that moves from Planned to covered.
+    validations: { required: true }
+
+  - type: textarea
+    id: known_gaps
+    attributes:
+      label: Known gaps
+      description: >
+        What this will not catch, stated before the work starts (LAW 10). Each becomes a
+        COVERAGE.md residual-gap row.
+    validations: { required: false }
+
+  - type: textarea
+    id: where
+    attributes:
+      label: Where
+      description: >
+        Files, modules or symbols expected to change. If this rebuilds something from
+        the archive, its inventory row and what the original got wrong.
+    validations: { required: false }

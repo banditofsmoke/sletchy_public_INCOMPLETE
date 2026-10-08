@@ -1,0 +1,36 @@
+[package]
+name = "sletchy-desktop"
+version = "0.0.1"
+description = "The Sletchy desktop shell. Starts the Kernel as a job-confined child and talks over its pipes (ADR-0008)."
+edition = "2021"
+rust-version = "1.77"
+publish = false
+
+[lib]
+name = "sletchy_desktop_lib"
+crate-type = ["rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+# No Tauri plugins at all: no shell, no fs, no http. The window can reach exactly the
+# two commands in capabilities/main.json, and nothing else.
+tauri = { version = "2", features = [] }
+serde_json = "1"
+
+[target.'cfg(windows)'.dependencies]
+windows-sys = { version = "0.59", features = [
+    "Win32_Foundation",
+    "Win32_Security",
+    "Win32_System_Diagnostics_ToolHelp",
+    "Win32_System_JobObjects",
+    "Win32_System_ProcessStatus",
+    "Win32_System_Threading",
+] }
+
+[profile.release]
+codegen-units = 1
+lto = true
+opt-level = "s"
+strip = true

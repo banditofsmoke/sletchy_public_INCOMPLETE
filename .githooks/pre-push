@@ -1,0 +1,38 @@
+#!/bin/sh
+# Refuse a direct push to main.
+#
+# GitHub branch protection needs Pro on a private repo, so this is the local
+# equivalent: everything ships through issue -> branch -> PR -> merge.
+#
+# Enable with:  git config core.hooksPath .githooks
+#
+# This hook is a discipline aid, not a security control - it is bypassable with
+# --no-verify by design, because a hook that cannot be bypassed in an emergency is
+# a hazard. Bypassing it is a decision you make deliberately, not by accident.
+
+protected="refs/heads/main"
+
+while read -r _local_ref local_sha remote_ref _remote_sha; do
+    [ "$remote_ref" != "$protected" ] && continue
+
+    # Deleting main
+    if [ "$local_sha" = "0000000000000000000000000000000000000000" ]; then
+        echo "BLOCKED: refusing to delete main." >&2
+        exit 1
+    fi
+
+    echo "" >&2
+    echo "BLOCKED: direct push to main." >&2
+    echo "" >&2
+    echo "  Everything ships through issue -> branch -> PR -> merge." >&2
+    echo "  See CLAUDE.md and docs/LAW/laws.md (PR checklist)." >&2
+    echo "" >&2
+    echo "  Instead:" >&2
+    echo "    git checkout -b wave1/your-change" >&2
+    echo "    git push -u origin wave1/your-change" >&2
+    echo "    gh pr create" >&2
+    echo "" >&2
+    exit 1
+done
+
+exit 0

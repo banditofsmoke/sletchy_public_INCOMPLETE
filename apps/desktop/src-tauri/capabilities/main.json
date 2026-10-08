@@ -1,0 +1,7 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "main",
+  "description": "The one window. It may ask the bridge for an allowlisted method and read the bridge's own status. Nothing else: no filesystem, no shell, no network, no core plugins.",
+  "windows": ["main"],
+  "permissions": ["allow-bridge-call", "allow-bridge-info"]
+}

@@ -1,0 +1,71 @@
+name: "Bug"
+description: "Something does what it should not, or does not do what it should."
+title: "<plane>/<module>: <what goes wrong>"
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Written for a public reader: no machine names, paths, account names, personal
+        circumstances or secrets in pasted output (`docs/LAW/writing-conventions.md`,
+        section 0). If the bug can harm the host, say so in the title.
+
+  - type: textarea
+    id: what_happens
+    attributes:
+      label: What happens
+      description: The command or action, and what it did. Paste the output.
+      placeholder: "`sletchy ledger show` on a ledger with an emoji in a reason exits 1 with a traceback."
+    validations: { required: true }
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What should happen
+      description: And the law, doc or test that says so.
+    validations: { required: true }
+
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      description: Numbered, from a fresh clone where possible.
+      placeholder: |
+        1. uv run sletchy init
+        2. ...
+    validations: { required: true }
+
+  - type: textarea
+    id: impact
+    attributes:
+      label: Impact
+      description: >
+        Who meets it, what it costs them, and whether it touches the host (LAW 0).
+    validations: { required: true }
+
+  - type: textarea
+    id: abuse_cases
+    attributes:
+      label: Abuse cases
+      description: >
+        Could someone trigger this on purpose, and what would it get them? What will
+        stop it once fixed, and the test that will prove it.
+      placeholder: |
+        | Who | What they try | What stops it | Proven by |
+        |---|---|---|---|
+        |  |  |  |  |
+    validations: { required: true }
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: The OS and its build, the Python version, and the commit (`git rev-parse --short HEAD`).
+    validations: { required: false }
+
+  - type: textarea
+    id: cause
+    attributes:
+      label: Suspected cause
+      description: The line or mechanism, if known. A guess is labelled as one.
+    validations: { required: false }

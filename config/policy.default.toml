@@ -1,0 +1,63 @@
+# Sletchy default policy.
+#
+# This file grants NOTHING, on purpose.
+#
+# LAW 2: the answer to a question nobody wrote a rule for is DENY. A fresh install
+# should be inert - useful once the operator turns things on, and incapable of
+# reaching anything until they do.
+#
+# The rules below are commented out. They are here as worked examples of the shape,
+# not as defaults waiting to be uncommented carelessly. Read what each one grants
+# before enabling it.
+#
+# Every ALLOW rule MUST carry a `reason`. A rule that allows without saying why
+# fails validation at load time - an unexplained ALLOW is a hole nobody can review.
+
+version = 1
+
+# ── examples, all disabled ───────────────────────────────────────────────────
+#
+# Local model inference. Nothing leaves the host: Ollama binds loopback.
+#
+# [[rule]]
+# id = "ollama-loopback"
+# decision = "allow"
+# reason = "local model inference; loopback only, no egress off-host"
+# action = "warden.egress.request"
+# subject_kind = "host"
+# subject_pattern = "127.0.0.1"
+# priority = 100
+#
+#
+# A hosted model endpoint. This one DOES leave the bubble - every prompt sent
+# through it is disclosed to a third party. Enable deliberately.
+#
+# [[rule]]
+# id = "groq-api"
+# decision = "allow"
+# reason = "hosted inference; prompts leave the bubble and reach a third party"
+# action = "warden.egress.request"
+# subject_kind = "host"
+# subject_pattern = "api.groq.com"
+# min_trust = 60
+# priority = 50
+#
+#
+# Ask a human before anything irreversible. ASK is not ALLOW - the action does not
+# proceed until the human answers (LAW 7).
+#
+# [[rule]]
+# id = "confirm-irreversible"
+# decision = "ask"
+# action = "vault.deploy"
+# priority = 900
+#
+#
+# A blanket deny that outranks everything. Priority 1000 is the ceiling, so this
+# cannot be overridden by a lower-priority allow.
+#
+# [[rule]]
+# id = "no-mainnet-without-review"
+# decision = "deny"
+# action = "vault.deploy.mainnet"
+# priority = 1000

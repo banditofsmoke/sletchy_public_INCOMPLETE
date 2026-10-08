@@ -1,0 +1,146 @@
+[project]
+name = "sletchy"
+version = "0.0.1"
+description = "A sealed personal enclave: private network+compute bubble with a self-contained SOC/NOC."
+requires-python = ">=3.13"
+dependencies = [
+    "keyring>=25.7.0",
+    "pydantic>=2.9",
+]
+
+[project.scripts]
+sletchy = "sletchy.cli.main:main"
+sletchy-soc = "sletchy.soc.cli:main"
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3",
+    "pytest-cov>=6.0",
+    "ruff>=0.8",
+    "mypy>=1.13",
+    "import-linter>=2.1",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/sletchy"]
+
+# ─────────────────────────────────────────────────────────────────────────────
+# ruff
+# ─────────────────────────────────────────────────────────────────────────────
+[tool.ruff]
+line-length = 100
+target-version = "py313"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = [
+    "E", "W",   # pycodestyle
+    "F",        # pyflakes
+    "I",        # isort
+    "B",        # bugbear
+    "UP",       # pyupgrade
+    "S",        # bandit - security
+    "ANN",      # annotations
+    "RUF",
+]
+ignore = [
+    "ANN401",   # Any is occasionally correct at boundaries
+    "E501",     # line length is ruff-format's job
+]
+
+[tool.ruff.lint.per-file-ignores]
+# Deliberately-broken fixtures. They exist to be *read*, never imported.
+"tests/fixtures/violations/*" = ["ALL"]
+# Tests assert on things bandit dislikes by design: hardcoded fake secrets,
+# asserts, subprocess calls against our own sandboxed surfaces.
+"tests/**" = ["S101", "S105", "S106", "S603", "S607", "ANN"]
+
+[tool.ruff.lint.flake8-bugbear]
+extend-immutable-calls = ["pydantic.Field"]
+
+# ─────────────────────────────────────────────────────────────────────────────
+# mypy - strict on the trust root, normal elsewhere
+# ─────────────────────────────────────────────────────────────────────────────
+[tool.mypy]
+python_version = "3.13"
+# Sletchy targets Windows, and `warden/isolation/_win32.py` is unanalysable under
+# any other platform assumption - typeshed hides ctypes.wintypes elsewhere. Fixing
+# the platform means the Windows branches are the ones actually type-checked, on
+# every runner. The cost is that POSIX-only branches are not, which today is only
+# the shell probe in tests/adversarial/probes.py.
+platform = "win32"
+files = ["src", "tests"]
+exclude = ["tests/fixtures/violations/"]
+plugins = ["pydantic.mypy"]
+warn_unused_configs = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+no_implicit_reexport = true
+
+[[tool.mypy.overrides]]
+module = "sletchy.kernel.*"
+strict = true
+disallow_any_explicit = true
+warn_return_any = true
+
+# ─────────────────────────────────────────────────────────────────────────────
+# pytest
+# ─────────────────────────────────────────────────────────────────────────────
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q --strict-markers --strict-config"
+markers = [
+    "adversarial: attack-shaped tests; see tests/adversarial/COVERAGE.md",
+    "law_zero: asserts LAW 0 (host safety) mechanically",
+    "slow: excluded from the fast loop",
+]
+
+# ─────────────────────────────────────────────────────────────────────────────
+# import-linter - planes depend downward only (issue #10 hardens this further)
+# ─────────────────────────────────────────────────────────────────────────────
+[tool.importlinter]
+root_package = "sletchy"
+
+[[tool.importlinter.contracts]]
+name = "Planes depend downward only"
+type = "layers"
+layers = [
+    "sletchy.mind | sletchy.senses | sletchy.forge | sletchy.vault",
+    "sletchy.warden | sletchy.soc",
+    "sletchy.kernel",
+]
+
+[[tool.importlinter.contracts]]
+name = "The Shell reaches the SOC only through the ledger, the Warden only through its supervisor (ADR-0011)"
+type = "forbidden"
+source_modules = ["sletchy.cli"]
+forbidden_modules = [
+    "sletchy.forge",
+    "sletchy.senses",
+    "sletchy.soc",
+    "sletchy.vault",
+    "sletchy.warden.egress",
+    "sletchy.warden.fsguard",
+    "sletchy.warden.isolation",
+    "sletchy.warden.supply",
+]
+# The supervisor itself imports the sandboxes; that is the door doing its job. The AST
+# test in tests/unit/test_import_layers.py checks direct imports the same way.
+allow_indirect_imports = true
+
+[[tool.importlinter.contracts]]
+name = "Kernel is the trust root and imports nothing from sletchy"
+type = "forbidden"
+source_modules = ["sletchy.kernel"]
+forbidden_modules = [
+    "sletchy.warden",
+    "sletchy.soc",
+    "sletchy.mind",
+    "sletchy.senses",
+    "sletchy.forge",
+    "sletchy.vault",
+]

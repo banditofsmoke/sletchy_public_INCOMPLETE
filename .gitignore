@@ -1,0 +1,67 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# THE ARCHIVE - never committed.
+# ~3.5 GB of venvs, node_modules, model blobs, build output, and six old API
+# keys across Groq / OpenAI / Google, all dead since 2026-10-08. Read-only archaeology.
+# See docs/salvage/INVENTORY.md and docs/salvage/CREDENTIALS-TO-ROTATE.md
+# ─────────────────────────────────────────────────────────────────────────────
+Scraps and Parts/
+
+# ─── Sletchy runtime state ───────────────────────────────────────────────────
+# The ONLY directory Sletchy writes to. Ledger, memory, caches, models.
+var/*
+!var/.gitkeep
+
+# ─── Secrets - belt and braces. Secrets live in the OS keychain, never here. ──
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.pfx
+*.p12
+credentials.json
+secrets.*
+
+# ─── Python ──────────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+dist/
+build/
+
+# ─── Node / Electron ─────────────────────────────────────────────────────────
+node_modules/
+dist-packager/
+renderer-dist/
+out/
+*.asar
+.vite/
+
+# ─── Models, datasets, big binaries - content-addressed under var/ instead ───
+*.gguf
+*.safetensors
+*.pt
+*.pth
+*.onnx
+*.bin
+*.pkl
+*.tar
+*.zip
+*.7z
+
+# ─── OS / editor ─────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+.idea/
+.vscode/
+!.vscode/extensions.json
+*.swp

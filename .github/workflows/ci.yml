@@ -1,0 +1,146 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+# Every action is pinned to a full commit, not a tag. A tag can be moved to other code at
+# any time, and a moved tag runs with this repository's token (LAW 4, #34). Each comment
+# names the release the commit was resolved from. Every action runs on Node 24, because
+# GitHub is retiring Node 20 (#34). Updating a pin is a reviewed change, never automatic.
+jobs:
+  # Cheapest job first, and the one that must never be skipped.
+  secrets:
+    name: secret scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97  # v7.0.0
+        with:
+          python-version: "3.13"
+      - run: python scripts/secret_scan.py
+
+  # A PR's own text: written for a public reader, and in the agreed shape
+  # (docs/LAW/writing-conventions.md, sections 0 and 2). A job of its own, so a title
+  # in the wrong shape is never reported as a failed secret scan.
+  pr-text:
+    name: PR title and body
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    env:
+      # Through the environment, never interpolated into a script: a PR's text is
+      # written by whoever opened it, and text spliced into `run` is executed.
+      PR_TITLE: ${{ github.event.pull_request.title }}
+      PR_BODY: ${{ github.event.pull_request.body }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97  # v7.0.0
+        with:
+          python-version: "3.13"
+      - name: written for a public reader
+        run: printf '%s\n\n%s\n' "$PR_TITLE" "$PR_BODY" | python scripts/public_check.py -
+      - name: in the agreed shape
+        run: printf '%s\n\n%s\n' "$PR_TITLE" "$PR_BODY" | python scripts/pr_check.py -
+
+  check:
+    name: lint / types / tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+      - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7  # v10.2.0
+        with:
+          enable-cache: true
+      - run: uv sync --locked --all-extras --dev
+
+      - name: ruff
+        run: uv run ruff check .
+
+      - name: ruff format
+        run: uv run ruff format --check .
+
+      - name: mypy
+        run: uv run mypy
+
+      - name: import layers (planes depend downward only)
+        run: uv run lint-imports
+
+      - name: pytest
+        run: uv run pytest --cov=sletchy --cov-report=term-missing
+
+      # The container backend's lane (#70, ADR-0014). Podman is already on the runner; the
+      # image is pulled by digest here, never by a run, and only then is the backend
+      # available, so the suite above ran without it and this runs it against the
+      # shared conformance suite.
+      - name: container backend on Podman
+        run: |
+          podman pull docker.io/library/debian@sha256:3783cc01769c7b2b1b83a5c5ad96c815348e28ed7da68e2e3687004faa906251
+          uv run pytest -p no:cacheprovider tests/adversarial/test_isolation_conformance.py tests/adversarial/test_container_backend.py tests/adversarial/test_panic_containers.py
+
+      # Here and not in the suite: it needs the network, which the suite refuses (LAW 0 §6).
+      - name: known vulnerabilities (OSV), every lockfile
+        run: uv run python scripts/known_vulnerabilities.py
+
+  # LAW 0 is host-safety, so its tests belong on the host OS Sletchy targets.
+  law-zero:
+    name: LAW 0 (windows)
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+      - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7  # v10.2.0
+        with:
+          enable-cache: true
+      - run: uv sync --locked --all-extras --dev
+      - name: adversarial + law-zero
+        # The exit-5 carve-out added in #14 is gone: real law_zero tests exist now,
+        # so an empty run is a bug and must fail again.
+        run: uv run pytest -m "law_zero or adversarial"
+
+      - name: law-zero must not be empty
+        shell: pwsh
+        run: |
+          $count = (uv run pytest -m law_zero --collect-only -q) -match "test"
+          if (-not $count) { throw "no law_zero tests collected" }
+
+  # The desktop shell (ADR-0008). Windows, because the Job Object code and its tests
+  # are Windows-only, and the Rust test that starts the real Kernel needs the venv.
+  desktop:
+    name: desktop (windows)
+    runs-on: windows-latest
+    defaults:
+      run:
+        working-directory: apps/desktop
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020  # v7.0.0
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: apps/desktop/package-lock.json
+      - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7  # v10.2.0
+        with:
+          enable-cache: true
+      - name: kernel venv (the Rust integration test starts the real bridge)
+        working-directory: .
+        run: uv sync --locked --all-extras --dev
+      - name: install (no install scripts, lockfile only)
+        run: npm ci
+      - name: generated contracts are current
+        working-directory: .
+        run: uv run python scripts/gen_desktop_contracts.py --check
+      - name: typecheck
+        run: npm run typecheck
+      - name: window tests
+        run: npm test
+      - name: build the window
+        run: npm run build
+      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6  # v2.9.2
+        with:
+          workspaces: apps/desktop/src-tauri
+      - name: shell tests (job object, allowlist, the real kernel)
+        working-directory: apps/desktop/src-tauri
+        run: cargo test

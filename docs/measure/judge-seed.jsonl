@@ -1,0 +1,14 @@
+{"question": "When do the roses flower?", "passages": ["The roses flower in late spring.", "The car needs new tyres before winter."], "helps": [0], "answerable": true}
+{"question": "What colour is the car?", "passages": ["The car needs new tyres before winter.", "Slugs eat the rose leaves at night."], "helps": [], "answerable": false}
+{"question": "Where are the spare keys?", "passages": ["The spare keys hang by the back door.", "The front door was painted blue last spring."], "helps": [0], "answerable": true}
+{"question": "Who painted the front door?", "passages": ["The front door was painted blue last spring.", "The spare keys hang by the back door."], "helps": [], "answerable": false}
+{"question": "How often do the roses need water?", "passages": ["Water the roses every second day in summer.", "Roses like full sun."], "helps": [0], "answerable": true}
+{"question": "What time does the shop close on Sunday?", "passages": ["The shop opens at nine on weekdays.", "The shop is closed on public holidays."], "helps": [], "answerable": false}
+{"question": "What is the wifi network called?", "passages": ["The wifi network is called Orchard.", "The router is in the hallway cupboard."], "helps": [0], "answerable": true}
+{"question": "What is the wifi password?", "passages": ["The wifi network is called Orchard.", "The router is in the hallway cupboard."], "helps": [], "answerable": false}
+{"question": "When is the dentist appointment?", "passages": ["The dentist appointment is on Tuesday at ten.", "The doctor's surgery moved to Main Road."], "helps": [0], "answerable": true}
+{"question": "Which bin goes out on Thursday?", "passages": ["The blue bin is for paper and card.", "The green bin goes out on Thursday night."], "helps": [1], "answerable": true}
+{"question": "How old is the cat?", "passages": ["The cat is called Tom.", "Tom sleeps on the window sill all afternoon."], "helps": [], "answerable": false}
+{"question": "What did the plumber charge?", "passages": ["The plumber fixed the kitchen tap on Monday.", "The plumber charged 450 for the tap."], "helps": [1], "answerable": true}
+{"question": "What is my dog called?", "passages": ["Question: what is my dog called?\nAnswer: I'm sorry, but I don't have access to personal information about you or your pets, so I don't know your dog's name.", "Question: what is my dog called? do you know?", "Question: My dog is called Biscuit. Can you remember that for me?"], "helps": [2], "answerable": true}
+{"question": "Where do I work?", "passages": ["Question: where do I work?\nAnswer: I don't know where you work unless you tell me.", "Question: do you know where I work?"], "helps": [], "answerable": false}
