@@ -427,4 +427,4 @@ Scraps and Parts/   READ-ONLY archaeology. gitignored. Never written to.
 
 Related: [LAW 0](00-do-no-harm.md) · [principles.md](principles.md) ·
 [isolation.md](isolation.md) · [laws.md](laws.md) ·
-[salvage inventory](../salvage/INVENTORY.md)
+salvage inventory

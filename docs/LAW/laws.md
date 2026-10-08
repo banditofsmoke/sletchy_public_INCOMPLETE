@@ -152,7 +152,7 @@ outside `var/`, microphone, camera, screen, wallet, or training defaults **off**
 `Scraps and Parts/` is read-only archaeology. Never import from it, never copy from it,
 never write to it.
 
-- Every salvaged idea is recorded in [`docs/salvage/INVENTORY.md`](../salvage/INVENTORY.md)
+- Every salvaged idea is recorded in `docs/salvage/INVENTORY.md`
   with a verdict and a destination.
 
 **Check:** did any code in this PR arrive by copy-paste rather than by rewrite?

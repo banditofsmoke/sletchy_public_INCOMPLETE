@@ -20,7 +20,7 @@ Two pulls have to be reconciled, and both are mine:
 - **Sletchy is personal.** It learns one person, holds that person's ledger and memory,
   and is aligned to them. Publishing the code must not change that.
 - **The oldest idea in the archive points the other way.** The Global Defense Network
-  ([INVENTORY §2](../salvage/INVENTORY.md)) was many nodes, not one: *"a network that's
+  (INVENTORY §2) was many nodes, not one: *"a network that's
   friendly and helps AI agents and humans flourish, while keeping Sletchy always aligned
   to me."*
 

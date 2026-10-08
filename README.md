@@ -1017,7 +1017,7 @@ an Ollama agent roll-cage, a hardened Electron GraphRAG app, a temporal knowledg
 voice assistant, a 21-technique RAG catalog, and a model benchmark harness.
 
 **Nothing is copied.** Every idea is re-implemented under the laws, with provenance recorded
-in [`docs/salvage/INVENTORY.md`](docs/salvage/INVENTORY.md).
+in `docs/salvage/INVENTORY.md`.
 
 ### Sletchy and Uttu
 

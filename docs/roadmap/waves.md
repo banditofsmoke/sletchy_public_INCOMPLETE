@@ -13,8 +13,8 @@ Every wave ships through issues → branch → PR → review against
 
 Foundations, no runtime.
 
-- [x] Survey and dissect `Scraps and Parts/` → [salvage inventory](../salvage/INVENTORY.md)
-- [x] Credential sweep → [rotation list](../salvage/CREDENTIALS-TO-ROTATE.md)
+- [x] Survey and dissect `Scraps and Parts/` → salvage inventory
+- [x] Credential sweep → rotation list
 - [x] [LAW 0 - Do no harm](../LAW/00-do-no-harm.md)
 - [x] [Principles](../LAW/principles.md), [Laws](../LAW/laws.md), [Architecture](../LAW/architecture.md), [Isolation](../LAW/isolation.md)
 - [x] ADRs 0001–0004

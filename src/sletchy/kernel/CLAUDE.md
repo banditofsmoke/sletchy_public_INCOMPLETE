@@ -44,7 +44,7 @@ Read [`docs/LAW/laws.md`](../../../docs/LAW/laws.md) and
 
 - Refs in config, values from the OS keychain, resolved at use time.
 - **Fail closed.** No fallback defaults, ever. See
-  [`docs/salvage/CREDENTIALS-TO-ROTATE.md`](../../../docs/salvage/CREDENTIALS-TO-ROTATE.md)
+  `docs/salvage/CREDENTIALS-TO-ROTATE.md`
   for why this rule has teeth.
 - Never logged. Never in a ledger payload - only the ref and a hash.
 

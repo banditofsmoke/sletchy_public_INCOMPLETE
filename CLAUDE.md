@@ -46,7 +46,7 @@ installed software, and this is my only computer).
 1. **`Scraps and Parts/` is read-only. Never write to it. Never import from it.**
    It is archaeology. Read it, learn, then rebuild from scratch under the laws.
    Every salvaged idea is logged in
-   [`docs/salvage/INVENTORY.md`](docs/salvage/INVENTORY.md) with a verdict and a
+   `docs/salvage/INVENTORY.md` with a verdict and a
    destination. It is gitignored in full - 3.5 GB of venvs, `node_modules`, model blobs,
    and six old API keys, all six dead since 2026-10-08.
 
@@ -203,7 +203,7 @@ Everything ships through **issue → branch → PR → review → merge**. No di
 - OS keychain only. Config holds `secret_ref`s, never values.
 - **Fail closed** on a missing secret. Never a fallback default - that exact pattern
   (`os.environ.get("GROQ_API_KEY", "gsk_live…")`) is why six keys leaked across the old <!-- secret-scan: allow -->
-  projects. See [`docs/salvage/CREDENTIALS-TO-ROTATE.md`](docs/salvage/CREDENTIALS-TO-ROTATE.md).
+  projects. See `docs/salvage/CREDENTIALS-TO-ROTATE.md`.
 - A pre-commit secret scan and the same sweep in CI block regressions.
 
 ---

@@ -116,7 +116,7 @@ on.
 re-implement. We never import from it, never copy a file wholesale, and never write to
 it.
 
-Every salvaged idea is recorded in [`docs/salvage/INVENTORY.md`](../salvage/INVENTORY.md)
+Every salvaged idea is recorded in `docs/salvage/INVENTORY.md`
 with a verdict and a destination, so provenance is traceable and nothing good is lost.
 Code that arrives without passing through the laws is not salvage - it is debt.
 
